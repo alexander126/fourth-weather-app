@@ -9,17 +9,17 @@
     ],
     "paths": {
       "@/*": [
+        "./src/*",
         "./*"
       ]
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ],
-  "exclude": [
-    "app-example"
   ]
 }
