@@ -1,3 +1,4 @@
+import { SAN_FRANCISCO_COORDS } from '@/config/consts';
 import { useLocationDataStore } from '@/store/location-data.store';
 
 import { getMockForecastResponse } from './utils/get-mock-forecast-response';
@@ -11,11 +12,15 @@ describe('useLocationDataStore', () => {
     useLocationDataStore.getState().setLoading(false);
     useLocationDataStore
       .getState()
-      .setSuccess(getMockForecastResponse());
+      .setSuccess({
+        coords: SAN_FRANCISCO_COORDS,
+        data: getMockForecastResponse(),
+      });
 
     useLocationDataStore.getState().resetData();
 
     expect(useLocationDataStore.getState()).toMatchObject({
+      coords: null,
       data: null,
       error: null,
       loading: true,
@@ -25,9 +30,13 @@ describe('useLocationDataStore', () => {
   test('stores fetched data with the success action', () => {
     const response = getMockForecastResponse();
 
-    useLocationDataStore.getState().setSuccess(response);
+    useLocationDataStore.getState().setSuccess({
+      coords: SAN_FRANCISCO_COORDS,
+      data: response,
+    });
 
     expect(useLocationDataStore.getState()).toMatchObject({
+      coords: SAN_FRANCISCO_COORDS,
       data: response,
       error: null,
       loading: false,
@@ -37,11 +46,15 @@ describe('useLocationDataStore', () => {
   test('stores the failure state and clears stale data', () => {
     useLocationDataStore
       .getState()
-      .setSuccess(getMockForecastResponse());
+      .setSuccess({
+        coords: SAN_FRANCISCO_COORDS,
+        data: getMockForecastResponse(),
+      });
 
     useLocationDataStore.getState().setFailure('Please try again in a moment.');
 
     expect(useLocationDataStore.getState()).toMatchObject({
+      coords: null,
       data: null,
       error: 'Please try again in a moment.',
       loading: false,

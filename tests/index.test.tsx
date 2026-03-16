@@ -17,6 +17,19 @@ jest.mock('expo-router', () => ({
   }),
 }));
 
+jest.mock('expo-location', () => ({
+  Accuracy: {
+    Balanced: 'balanced',
+  },
+  PermissionStatus: {
+    DENIED: 'denied',
+    GRANTED: 'granted',
+  },
+  getCurrentPositionAsync: jest.fn(),
+  getForegroundPermissionsAsync: jest.fn(),
+  requestForegroundPermissionsAsync: jest.fn(),
+}));
+
 jest.mock('@/services/weather.service', () => ({
   fetchWeatherForecast: jest.fn(),
 }));

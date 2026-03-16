@@ -39,10 +39,10 @@ export function ForecastDayRow({
 
   return (
     <Pressable
-      accessibilityLabel={`${dayLabel} forecast`}
       accessibilityRole="button"
       onPress={onPress}
       disabled={disabled}
+      testID={`forecast-day-${day.key}`}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       <Text
