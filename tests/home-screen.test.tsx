@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 
 import HomeScreen from '@/screens/home-screen';
 import { fetchWeatherForecast } from '@/services/weather.service';
@@ -7,6 +7,13 @@ import { useLocationDataStore } from '@/store/location-data.store';
 import { getMockForecastResponse } from './utils/get-mock-forecast-response';
 
 const mockFetchWeatherForecast = jest.mocked(fetchWeatherForecast);
+const mockPush = jest.fn();
+
+jest.mock('expo-router', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}));
 
 jest.mock('@/services/weather.service', () => ({
   fetchWeatherForecast: jest.fn(),

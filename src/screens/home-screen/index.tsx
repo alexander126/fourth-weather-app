@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { FlatList, Text, View } from "react-native";
@@ -25,6 +26,7 @@ const keyExtractor = (item: ForecastDayGroup) => item.key;
 
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { data, error, loading, setFailure, setLoading, setSuccess } =
     useLocationDataStore(
       useShallow((state) => ({
@@ -82,6 +84,20 @@ export default function HomeScreen() {
   const timezoneOffset = data.city.timezone ?? 0;
   const currentVisual = getForecastVisual(currentItem);
   const currentDate = new Date((currentItem.dt + timezoneOffset) * 1000);
+  const canNavigateToDay = Boolean(data) && !error && !loading;
+
+  function handleDayPress(dayKey: string) {
+    if (!canNavigateToDay) {
+      return;
+    }
+
+    router.push({
+      pathname: "/day",
+      params: { day: dayKey },
+    });
+  }
+
+
 
   return (
     <View style={styles.screen}>
@@ -124,7 +140,9 @@ export default function HomeScreen() {
               renderItem={({ item }) => (
                 <ForecastDayRow
                   day={item}
+                  onPress={() => handleDayPress(item.key)}
                   timezoneOffset={timezoneOffset}
+                  disabled={!canNavigateToDay}
                   todayKey={currentDay.key}
                 />
               )}

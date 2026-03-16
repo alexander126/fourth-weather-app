@@ -15,9 +15,13 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "space-between",
   },
+  rowPressed: {
+    backgroundColor: colors.backgroundSurfacePressed,
+  },
   tempRow: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 10,
   },
   dayLabel: {
     width: 54,
@@ -38,7 +42,7 @@ export const styles = StyleSheet.create({
   tempValue: {
     flexShrink: 0,
     textAlign: "right",
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
     color: colors.textPrimary,
   },

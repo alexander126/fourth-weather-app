@@ -1,11 +1,14 @@
 import type { ComponentProps } from "react";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { format } from "date-fns";
 import { Text, View } from "react-native";
 
 import type { Theme } from "@/theme/colors";
 import { theme } from "@/theme/colors";
+import {
+  formatForecastFullDate,
+  formatForecastTime,
+} from "@/utils/forecast-date";
 
 import { styles } from "./styles";
 
@@ -34,8 +37,8 @@ export function HeroSection({
     <View style={styles.heroSection}>
       <Text style={styles.cityLabel}>{cityName}</Text>
       <Text style={styles.updatedText}>
-        {format(currentDate, "EEEE, MMM d")} · Updated{" "}
-        {format(currentDate, "h:mm a")}
+        {formatForecastFullDate(currentDate)} · Updated{" "}
+        {formatForecastTime(currentDate)}
       </Text>
 
       <Text style={styles.heroTemperature}>
