@@ -4,10 +4,17 @@ import App from '@/app/index';
 import { fetchWeatherForecast } from '@/services/weather.service';
 
 const mockFetchWeatherForecast = jest.mocked(fetchWeatherForecast);
+const mockPush = jest.fn();
 
 jest.mock('@expo/vector-icons', () => ({
   Feather: () => null,
   MaterialCommunityIcons: () => null,
+}));
+
+jest.mock('expo-router', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
 }));
 
 jest.mock('@/services/weather.service', () => ({
