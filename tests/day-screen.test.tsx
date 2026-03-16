@@ -70,9 +70,9 @@ describe('DayScreen', () => {
         data: getMockForecastResponse(),
       });
 
-    const { findByLabelText } = render(<DayScreen />);
+    const { findByTestId } = render(<DayScreen />);
 
-    const backButton = await findByLabelText('Back to home');
+    const backButton = await findByTestId('day-screen-back-button');
 
     fireEvent.press(backButton);
 

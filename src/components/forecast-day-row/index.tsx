@@ -42,6 +42,7 @@ export function ForecastDayRow({
       accessibilityRole="button"
       onPress={onPress}
       disabled={disabled}
+      testID={`forecast-day-${day.key}`}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       <Text

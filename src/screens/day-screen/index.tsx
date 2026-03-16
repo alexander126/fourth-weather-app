@@ -50,6 +50,7 @@ export default function DayScreen() {
           <Pressable
             accessibilityRole="button"
             onPress={() => router.back()}
+            testID="day-screen-back-button"
             style={({ pressed }) => [
               styles.backButton,
               pressed && styles.backButtonPressed,

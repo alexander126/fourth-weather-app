@@ -14,6 +14,7 @@ export function SearchInput({
   editable = false,
   onPress,
   style,
+  testID,
   ...props
 }: SearchInputProps) {
 
@@ -26,6 +27,7 @@ export function SearchInput({
         placeholderTextColor={theme.colors.textSubtle}
         selectionColor={theme.colors.accentSky}
         style={[styles.input, style]}
+        testID={onPress ? undefined : testID}
         {...props}
       />
     </View>
@@ -39,6 +41,7 @@ export function SearchInput({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
+      testID={testID}
       style={({ pressed }) => [styles.trigger, pressed && styles.triggerPressed]}
     >
       {content}

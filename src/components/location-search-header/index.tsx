@@ -31,6 +31,7 @@ export function LocationSearchHeader({
         <SearchInput
           onPress={onSearchPress}
           placeholder="Search for a city..."
+          testID="choose-forecast-city-button"
           value={currentCityName}
         />
 
@@ -39,6 +40,7 @@ export function LocationSearchHeader({
             <Pressable
               accessibilityRole="button"
               onPress={onDropdownOptionPress}
+              testID="select-san-francisco-button"
               style={({ pressed }) => [
                 styles.dropdownOption,
                 pressed && styles.dropdownOptionPressed,
@@ -56,6 +58,7 @@ export function LocationSearchHeader({
       <Pressable
         accessibilityRole="button"
         onPress={onLocationPress}
+        testID="use-current-location-button"
         style={({ pressed }) => [
           styles.locationButton,
           pressed && styles.locationButtonPressed,

@@ -96,9 +96,9 @@ describe('HomeScreen', () => {
   test('navigates to the selected day breakdown', async () => {
     mockFetchWeatherForecast.mockResolvedValue(getMockForecastResponse());
 
-    const { findByLabelText } = render(<HomeScreen />);
+    const { findByTestId } = render(<HomeScreen />);
 
-    const todayForecastButton = await findByLabelText('Today forecast');
+    const todayForecastButton = await findByTestId('forecast-day-2026-03-16');
 
     fireEvent.press(todayForecastButton);
 
@@ -111,20 +111,20 @@ describe('HomeScreen', () => {
   test('prevents day navigation when forecast data is unavailable', async () => {
     mockFetchWeatherForecast.mockRejectedValue(new Error('Request failed'));
 
-    const { findByText, queryByLabelText } = render(<HomeScreen />);
+    const { findByText, queryByTestId } = render(<HomeScreen />);
 
     await findByText('Unable to load forecast');
 
-    expect(queryByLabelText('Today forecast')).toBeNull();
+    expect(queryByTestId('forecast-day-2026-03-16')).toBeNull();
     expect(mockPush).not.toHaveBeenCalled();
   });
 
   test('fetches weather for the current location when the location button is pressed', async () => {
     mockFetchWeatherForecast.mockResolvedValue(getMockForecastResponse());
 
-    const { findByLabelText } = render(<HomeScreen />);
+    const { findByTestId } = render(<HomeScreen />);
 
-    const locationButton = await findByLabelText('Use current location');
+    const locationButton = await findByTestId('use-current-location-button');
 
     fireEvent.press(locationButton);
 
@@ -138,13 +138,13 @@ describe('HomeScreen', () => {
   test('does not refetch San Francisco when it is already selected', async () => {
     mockFetchWeatherForecast.mockResolvedValue(getMockForecastResponse());
 
-    const { findByLabelText } = render(<HomeScreen />);
+    const { findByTestId } = render(<HomeScreen />);
 
-    const searchInputButton = await findByLabelText('Choose forecast city');
+    const searchInputButton = await findByTestId('choose-forecast-city-button');
 
     fireEvent.press(searchInputButton);
 
-    const sanFranciscoOption = await findByLabelText('Select San Francisco');
+    const sanFranciscoOption = await findByTestId('select-san-francisco-button');
 
     fireEvent.press(sanFranciscoOption);
 
