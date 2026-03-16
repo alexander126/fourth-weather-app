@@ -2,6 +2,7 @@ import { render } from '@testing-library/react-native';
 
 import HomeScreen from '@/screens/home-screen';
 import { fetchWeatherForecast } from '@/services/weather.service';
+import { useLocationDataStore } from '@/store/location-data.store';
 
 import { getMockForecastResponse } from './utils/get-mock-forecast-response';
 
@@ -14,6 +15,7 @@ jest.mock('@/services/weather.service', () => ({
 describe('HomeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    useLocationDataStore.getState().resetData();
   });
 
   test('renders the loading state', () => {
