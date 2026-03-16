@@ -1,8 +1,9 @@
 import { Feather } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useShallow } from "zustand/react/shallow";
 
 import { BackgroundOrbs } from "@/components/background-orbs";
 import { ForecastDayRow } from "@/components/forecast-day-row";
@@ -14,19 +15,27 @@ import { getForecastLow } from "@/screens/home-screen/utils/get-forecast-low";
 import { getForecastVisual } from "@/screens/home-screen/utils/get-forecast-visual";
 import { groupForecastByDay } from "@/screens/home-screen/utils/group-forecast-by-day";
 import { fetchWeatherForecast } from "@/services/weather.service";
+import { useLocationDataStore } from "@/store/location-data.store";
 import { theme } from "@/theme/colors";
-import type { OpenWeatherForecastResponse } from "@/typescript/weather";
 
 import { styles } from "./styles";
-import { ForecastDayGroup } from "./utils/types";
+import type { ForecastDayGroup } from "./utils/types";
 
-const keyExtractor = (item: ForecastDayGroup) => item.key
+const keyExtractor = (item: ForecastDayGroup) => item.key;
 
 
 export default function HomeScreen() {
-  const [data, setData] = useState<OpenWeatherForecastResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, error, loading, setFailure, setLoading, setSuccess } =
+    useLocationDataStore(
+      useShallow((state) => ({
+        data: state.data,
+        error: state.error,
+        loading: state.loading,
+        setFailure: state.setFailure,
+        setLoading: state.setLoading,
+        setSuccess: state.setSuccess,
+      })),
+    );
 
   useEffect(() => {
     async function loadHomeWeatherData() {
@@ -40,18 +49,14 @@ export default function HomeScreen() {
           },
         });
 
-
-        setData(response);
-        setError(null);
-        setLoading(false);
+        setSuccess(response);
       } catch {
-        setData(null);
-        setError("Please try again in a moment.");
-        setLoading(false);
+        setFailure("Please try again in a moment.");
       }
     }
 
     void loadHomeWeatherData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Called only on mount
   }, []);
 
   if (loading) {
