@@ -54,4 +54,30 @@ describe('HomeScreen', () => {
     await findByText('5-Day Forecast');
     getByPlaceholderText('Search for a city...');
   });
+
+  test('navigates to the selected day breakdown', async () => {
+    mockFetchWeatherForecast.mockResolvedValue(getMockForecastResponse());
+
+    const { findByLabelText } = render(<HomeScreen />);
+
+    const todayForecastButton = await findByLabelText('Today forecast');
+
+    fireEvent.press(todayForecastButton);
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: '/day',
+      params: { day: '2026-03-16' },
+    });
+  });
+
+  test('prevents day navigation when forecast data is unavailable', async () => {
+    mockFetchWeatherForecast.mockRejectedValue(new Error('Request failed'));
+
+    const { findByText, queryByLabelText } = render(<HomeScreen />);
+
+    await findByText('Unable to load forecast');
+
+    expect(queryByLabelText('Today forecast')).toBeNull();
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });
