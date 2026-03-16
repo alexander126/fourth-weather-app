@@ -39,7 +39,6 @@ export function ForecastDayRow({
 
   return (
     <Pressable
-      accessibilityLabel={`${dayLabel} forecast`}
       accessibilityRole="button"
       onPress={onPress}
       disabled={disabled}

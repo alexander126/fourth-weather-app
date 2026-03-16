@@ -5,6 +5,12 @@ import { theme } from "@/theme/colors";
 const { colors } = theme;
 
 export const styles = StyleSheet.create({
+  trigger: {
+    flex: 1,
+  },
+  triggerPressed: {
+    opacity: 0.92,
+  },
   container: {
     flex: 1,
     flexDirection: "row",

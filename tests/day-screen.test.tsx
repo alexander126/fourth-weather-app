@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@testing-library/react-native';
 
+import { SAN_FRANCISCO_COORDS } from '@/config/consts';
 import DayScreen from '@/screens/day-screen';
 import { useLocationDataStore } from '@/store/location-data.store';
 
@@ -29,7 +30,10 @@ describe('DayScreen', () => {
     mockDay = '2026-03-17';
     useLocationDataStore
       .getState()
-      .setSuccess(getMockForecastResponse());
+      .setSuccess({
+        coords: SAN_FRANCISCO_COORDS,
+        data: getMockForecastResponse(),
+      });
 
     const { findByText } = render(<DayScreen />);
 
@@ -44,7 +48,10 @@ describe('DayScreen', () => {
     mockDay = '2026-03-17';
     useLocationDataStore
       .getState()
-      .setSuccess(getMockForecastResponse());
+      .setSuccess({
+        coords: SAN_FRANCISCO_COORDS,
+        data: getMockForecastResponse(),
+      });
 
     const { findByText, queryByText } = render(<DayScreen />);
 
@@ -58,7 +65,10 @@ describe('DayScreen', () => {
   test('navigates back when pressing the back button', async () => {
     useLocationDataStore
       .getState()
-      .setSuccess(getMockForecastResponse());
+      .setSuccess({
+        coords: SAN_FRANCISCO_COORDS,
+        data: getMockForecastResponse(),
+      });
 
     const { findByLabelText } = render(<DayScreen />);
 

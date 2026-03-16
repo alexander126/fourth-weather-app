@@ -1,4 +1,5 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import * as Location from 'expo-location';
 
 import HomeScreen from '@/screens/home-screen';
 import { fetchWeatherForecast } from '@/services/weather.service';
@@ -7,12 +8,37 @@ import { useLocationDataStore } from '@/store/location-data.store';
 import { getMockForecastResponse } from './utils/get-mock-forecast-response';
 
 const mockFetchWeatherForecast = jest.mocked(fetchWeatherForecast);
+const mockGetCurrentPositionAsync = jest.mocked(Location.getCurrentPositionAsync);
+const mockGetForegroundPermissionsAsync = jest.mocked(
+  Location.getForegroundPermissionsAsync,
+);
+const mockRequestForegroundPermissionsAsync = jest.mocked(
+  Location.requestForegroundPermissionsAsync,
+);
 const mockPush = jest.fn();
+
+const londonCoords = {
+  lat: 51.5072,
+  long: -0.1276,
+};
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({
     push: mockPush,
   }),
+}));
+
+jest.mock('expo-location', () => ({
+  Accuracy: {
+    Balanced: 'balanced',
+  },
+  PermissionStatus: {
+    DENIED: 'denied',
+    GRANTED: 'granted',
+  },
+  getCurrentPositionAsync: jest.fn(),
+  getForegroundPermissionsAsync: jest.fn(),
+  requestForegroundPermissionsAsync: jest.fn(),
 }));
 
 jest.mock('@/services/weather.service', () => ({
@@ -23,6 +49,18 @@ describe('HomeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useLocationDataStore.getState().resetData();
+    mockGetForegroundPermissionsAsync.mockResolvedValue({
+      status: Location.PermissionStatus.GRANTED,
+    } as never);
+    mockRequestForegroundPermissionsAsync.mockResolvedValue({
+      status: Location.PermissionStatus.GRANTED,
+    } as never);
+    mockGetCurrentPositionAsync.mockResolvedValue({
+      coords: {
+        latitude: londonCoords.lat,
+        longitude: londonCoords.long,
+      },
+    } as never);
   });
 
   test('renders the loading state', () => {
@@ -47,12 +85,12 @@ describe('HomeScreen', () => {
   test('renders the normal state', async () => {
     mockFetchWeatherForecast.mockResolvedValue(getMockForecastResponse());
 
-    const { findByText, getByPlaceholderText } = render(<HomeScreen />);
+    const { findByDisplayValue, findByText } = render(<HomeScreen />);
 
     await findByText('San Francisco');
     await findByText('Rain');
     await findByText('5-Day Forecast');
-    getByPlaceholderText('Search for a city...');
+    await findByDisplayValue('San Francisco');
   });
 
   test('navigates to the selected day breakdown', async () => {
@@ -80,4 +118,37 @@ describe('HomeScreen', () => {
     expect(queryByLabelText('Today forecast')).toBeNull();
     expect(mockPush).not.toHaveBeenCalled();
   });
+
+  test('fetches weather for the current location when the location button is pressed', async () => {
+    mockFetchWeatherForecast.mockResolvedValue(getMockForecastResponse());
+
+    const { findByLabelText } = render(<HomeScreen />);
+
+    const locationButton = await findByLabelText('Use current location');
+
+    fireEvent.press(locationButton);
+
+    await waitFor(() => {
+      expect(mockFetchWeatherForecast).toHaveBeenLastCalledWith({
+        coords: londonCoords,
+      });
+    });
+  });
+
+  test('does not refetch San Francisco when it is already selected', async () => {
+    mockFetchWeatherForecast.mockResolvedValue(getMockForecastResponse());
+
+    const { findByLabelText } = render(<HomeScreen />);
+
+    const searchInputButton = await findByLabelText('Choose forecast city');
+
+    fireEvent.press(searchInputButton);
+
+    const sanFranciscoOption = await findByLabelText('Select San Francisco');
+
+    fireEvent.press(sanFranciscoOption);
+
+    expect(mockFetchWeatherForecast).toHaveBeenCalledTimes(1);
+  });
+
 });

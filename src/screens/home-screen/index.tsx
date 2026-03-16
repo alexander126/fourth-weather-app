@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
@@ -9,8 +9,10 @@ import { useShallow } from "zustand/react/shallow";
 import { BackgroundOrbs } from "@/components/background-orbs";
 import { ForecastDayRow } from "@/components/forecast-day-row";
 import { HeroSection } from "@/components/hero-section";
-import { SearchInput } from "@/components/search-input";
+import { LocationSearchHeader } from "@/components/location-search-header";
 import { StatusScreen } from "@/components/status-screen";
+import { SAN_FRANCISCO_COORDS } from "@/config/consts";
+import { useLocation } from "@/hooks/use-location";
 import { getForecastHigh } from "@/screens/home-screen/utils/get-forecast-high";
 import { getForecastLow } from "@/screens/home-screen/utils/get-forecast-low";
 import { getForecastVisual } from "@/screens/home-screen/utils/get-forecast-visual";
@@ -18,18 +20,21 @@ import { groupForecastByDay } from "@/screens/home-screen/utils/group-forecast-b
 import { fetchWeatherForecast } from "@/services/weather.service";
 import { useLocationDataStore } from "@/store/location-data.store";
 import { theme } from "@/theme/colors";
+import type { ForecastCoordinates } from "@/typescript/weather";
 
 import { styles } from "./styles";
 import type { ForecastDayGroup } from "./utils/types";
 
 const keyExtractor = (item: ForecastDayGroup) => item.key;
 
-
 export default function HomeScreen() {
   const router = useRouter();
-  const { data, error, loading, setFailure, setLoading, setSuccess } =
+  const { getCurrentCoordinates } = useLocation();
+  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
+  const { coords, data, error, loading, setFailure, setLoading, setSuccess } =
     useLocationDataStore(
       useShallow((state) => ({
+        coords: state.coords,
         data: state.data,
         error: state.error,
         loading: state.loading,
@@ -39,26 +44,59 @@ export default function HomeScreen() {
       })),
     );
 
-  useEffect(() => {
-    async function loadHomeWeatherData() {
-      try {
-        setLoading(true);
 
-        const response = await fetchWeatherForecast({
-          coords: {
-            lat: 37.7749,
-            long: -122.4194,
-          },
-        });
+  async function loadForecastForCoords(coordsToLoad: ForecastCoordinates) {
+    try {
+      setLoading(true);
 
-        setSuccess(response);
-      } catch {
-        setFailure("Please try again in a moment.");
-      }
+      const response = await fetchWeatherForecast({
+        coords: coordsToLoad,
+      });
+
+      setSuccess({
+        coords: coordsToLoad,
+        data: response,
+      });
+    } catch {
+      setFailure("Please try again in a moment.");
+    }
+  }
+
+  function handleSearchInputPress() {
+    setIsCityDropdownOpen((currentValue) => !currentValue);
+  }
+
+  async function handleSearchBoxPress() {
+    setIsCityDropdownOpen(false);
+
+    if (coords?.lat === SAN_FRANCISCO_COORDS.lat &&
+      coords?.long === SAN_FRANCISCO_COORDS.long) {
+      //Prevent another api request if we already showing SF
+      return;
     }
 
-    void loadHomeWeatherData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Called only on mount
+    await loadForecastForCoords(SAN_FRANCISCO_COORDS);
+  }
+
+  async function loadCurrentLocationWeather() {
+    setIsCityDropdownOpen(false);
+
+    try {
+      const currentCoordinates = await getCurrentCoordinates();
+
+      if (!currentCoordinates) {
+        return;
+      }
+
+      await loadForecastForCoords(currentCoordinates);
+    } catch {
+      setFailure("Please try again in a moment.");
+    }
+  }
+
+  useEffect(() => {
+    void loadForecastForCoords(SAN_FRANCISCO_COORDS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Initial demo city load only when store is empty
   }, []);
 
   if (loading) {
@@ -97,17 +135,21 @@ export default function HomeScreen() {
     });
   }
 
-
-
   return (
     <View style={styles.screen}>
       <StatusBar style="light" />
       <BackgroundOrbs />
 
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <SearchInput placeholder="Search for a city..." />
-        </View>
+        <LocationSearchHeader
+          currentCityName={data.city.name}
+          dropdownOptionLabel="San Francisco"
+          dropdownOptionMeta="America"
+          isDropdownOpen={isCityDropdownOpen}
+          onDropdownOptionPress={handleSearchBoxPress}
+          onLocationPress={loadCurrentLocationWeather}
+          onSearchPress={handleSearchInputPress}
+        />
 
         <HeroSection
           cityName={data.city.name}

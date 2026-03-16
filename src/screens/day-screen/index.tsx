@@ -48,7 +48,6 @@ export default function DayScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <Pressable
-            accessibilityLabel="Back to home"
             accessibilityRole="button"
             onPress={() => router.back()}
             style={({ pressed }) => [

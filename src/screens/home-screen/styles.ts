@@ -12,13 +12,6 @@ export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 20,
-  },
   mainContent: {
     paddingHorizontal: 24,
     paddingBottom: 32,
