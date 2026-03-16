@@ -1,28 +1,49 @@
 import { StyleSheet } from "react-native";
 
+import { theme } from "@/theme/colors";
+
+const { colors } = theme;
+
 export const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: colors.backgroundBase,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 24,
-    backgroundColor: "#f8fafc",
+    paddingTop: 12,
+    paddingBottom: 20,
   },
-  title: {
-    fontSize: 36,
+  mainContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+  },
+  panel: {
+    borderRadius: 30,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
+    backgroundColor: colors.backgroundSurface,
+  },
+  panelTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 18,
+  },
+  panelTitle: {
+    marginLeft: 8,
+    fontSize: 13,
     fontWeight: "700",
-    color: "#0f172a",
-    marginBottom: 12,
+    color: colors.textSubtle,
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
-  primaryAction: {
-    alignSelf: "flex-start",
-    backgroundColor: "#0f172a",
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    borderRadius: 999,
-  },
-  primaryActionLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#f8fafc",
+  forecastRowSeparator: {
+    height: 2,
   },
 });
